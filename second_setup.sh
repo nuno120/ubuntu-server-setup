@@ -43,31 +43,37 @@ sudo apt-get install -y fail2ban
 # Configure fail2ban
 cat << EOF | sudo tee /etc/fail2ban/jail.local
 [DEFAULT]
-bantime = 600
-findtime = 600
-maxretry = 3
+bantime = 60
+findtime = 60
+maxretry = 25
 action = %(action_)s
 
-[sshd]
+[sshd] # This is activated when a ssh connection is made
 enabled = true
 port = ${ssh_port}
 filter = sshd
 logpath = /var/log/auth.log
 
+# This is activated when a api request returns a 401 or 403, so we can block the ip address
 [http-auth]
 enabled = true
 filter = apache-auth
 ports = http,https
 logpath = /var/log/apache2/error.log
+maxretry = 50
+findtime = 60
+bantime = 60
 
+
+# This is always activated
 [http-get-dos]
 enabled = true
 port = http,https
 filter = http-get-dos
 logpath = /var/log/apache2/access.log
 maxretry = 300
-findtime = 300
-bantime = 600
+findtime = 60
+bantime = 60
 EOF
 
 # Create custom filter for HTTP DOS protection
