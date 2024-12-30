@@ -97,5 +97,3 @@ function setupTimezone() {
     setTimezone "${timezone}"
     echo "Timezone is set to $(cat /etc/timezone)" >&3
 }
-
-main

@@ -13,7 +13,7 @@ This is a setup script to automate the setup and provisioning of Ubuntu servers.
 * Setup the timezone for the server (Default to "Asia/Singapore")
 * Install Network Time Protocol
 
-## Enhanced Security Setup (total_setup.sh)
+## Enhanced Security Setup (second_setup.sh)
 * All features from basic setup
 * Configures custom SSH port
 * Enhanced UFW configuration:
@@ -44,25 +44,26 @@ cd ~
 git clone https://github.com/nuno120/ubuntu-server-setup.git
 ```
 
-Run either the basic or enhanced setup script:
+Run the setup scripts in sequence:
 ```bash
 cd ubuntu-server-setup
-# For basic setup:
+# Step 1: Basic setup
 bash setup.sh
-# For enhanced security setup:
-bash total_setup.sh
+# Step 2: Enhanced security setup
+bash second_setup.sh
 ```
 
 # Setup prompts
-When the setup script is run, you will be prompted for:
+The setup scripts will prompt you for different information:
 
+## First Setup (setup.sh):
 1. Whether to create a new non-root user account
 2. The username for the new account (if creating one)
 3. The public SSH key for the new account
 4. The timezone for the server (Default: "Asia/Singapore")
 
-Additional prompts for enhanced setup:
-5. Custom SSH port (Default: 22)
+## Second Setup (second_setup.sh):
+1. Custom SSH port (Default: 22)
 
 To generate an SSH key from your local machine:
 ```bash
