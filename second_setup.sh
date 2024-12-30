@@ -17,7 +17,8 @@ exec 3>&1 >>"${output_file}" 2>&1
 echo "Starting additional security configurations..." >&3
 
 # Configure custom SSH port
-read -rp $'Enter custom SSH port (default: 22):\n' ssh_port
+echo "Enter custom SSH port (default: 22):" >&3
+read -rp $'' ssh_port
 ssh_port=${ssh_port:-22}
 
 # Update SSH port in sshd_config
@@ -45,9 +46,7 @@ cat << EOF | sudo tee /etc/fail2ban/jail.local
 bantime = 600
 findtime = 600
 maxretry = 3
-destemail = root@localhost
-sender = root@$(hostname)
-action = %(action_mwl)s
+action = %(action_)s
 
 [sshd]
 enabled = true
