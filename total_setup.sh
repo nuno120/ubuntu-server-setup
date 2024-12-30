@@ -115,5 +115,5 @@ EOF
 }
 
 # Run both setup phases
-main
+source "${current_dir}/setup.sh"
 part_two_setup
