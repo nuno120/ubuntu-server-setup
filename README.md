@@ -41,7 +41,7 @@ sudo apt-get install git
 Clone this repository into your home directory:
 ```bash
 cd ~
-git clone https://github.com/jasonheecs/ubuntu-server-setup.git
+git clone https://github.com/nuno120/ubuntu-server-setup.git
 ```
 
 Run either the basic or enhanced setup script:
