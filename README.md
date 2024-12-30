@@ -1,112 +1,135 @@
-# Bash setup script for Ubuntu servers
+# Ubuntu Server Setup Scripts
 [![Build Status](https://travis-ci.org/jasonheecs/ubuntu-server-setup.svg?branch=master)](https://travis-ci.org/jasonheecs/ubuntu-server-setup)
 
-This is a setup script to automate the setup and provisioning of Ubuntu servers. It does the following:
+A comprehensive collection of setup scripts to automate the provisioning of Ubuntu servers. The setup is divided into three main scripts, each building upon the previous one:
 
-## Basic Setup (setup.sh)
-* Adds or updates a user account with sudo access
-* Adds a public ssh key for the new user account
-* Disables password authentication to the server
-* Deny root login to the server
-* Setup Uncomplicated Firewall
-* Create Swap file based on machine's installed memory
-* Setup the timezone for the server (Default to "Asia/Singapore")
-* Install Network Time Protocol
+## 1. Basic Setup (setup.sh)
+* User Management:
+  * Create/update user account with sudo access
+  * Add public SSH key for secure authentication
+* SSH Security:
+  * Disable password authentication
+  * Deny root login
+* System Configuration:
+  * Setup Uncomplicated Firewall (UFW)
+  * Create swap file based on machine's memory
+  * Configure timezone (Default: "Asia/Singapore")
+  * Install Network Time Protocol
 
-## Enhanced Security Setup (second_setup.sh)
-* All features from basic setup
-* Configures custom SSH port
-* Enhanced UFW configuration:
+## 2. Enhanced Security (second_setup.sh)
+* SSH Hardening:
+  * Configure custom SSH port
+  * Key-based authentication only
+* Advanced Firewall:
   * Allow custom SSH port
-  * Allow HTTP (80)
-  * Allow HTTPS (443)
+  * Allow HTTP (80) and HTTPS (443)
   * Deny all other incoming traffic
-* Fail2ban installation and configuration:
-  * SSH protection (max 3 retries)
+* Fail2ban Protection:
+  * SSH brute force protection (max 3 retries)
   * HTTP/HTTPS protection
-  * 10-minute ban time for failed attempts
-  * Email notifications for bans
-* Automatic security updates:
+  * 10-minute ban time
+  * Email notifications
+* Security Updates:
   * Unattended-upgrades configuration
-  * Security updates automation
-  * Email notifications for important updates
+  * Automated security updates
+  * Email notifications for updates
+
+## 3. Docker & Traefik Setup (third_setup.sh)
+* Docker Installation:
+  * Docker Engine (latest stable)
+  * Docker Compose v2
+  * User added to docker group
+* Directory Structure:
+  ```
+  /opt/docker/
+  ├── traefik/
+  │   ├── config/
+  │   └── acme/
+  ├── monitoring/
+  │   ├── prometheus/
+  │   └── grafana/
+  └── apps/
+  ```
+* Traefik Configuration:
+  * Automatic SSL certificates via Let's Encrypt
+  * HTTP to HTTPS redirect
+  * Secure dashboard access
+  * Rate limiting (100 req/min per IP)
+  * Security headers (HSTS, CSP, etc.)
 
 # Installation
-SSH into your server and install git if it is not installed:
+
+1. Install git if not present:
 ```bash
 sudo apt-get update
 sudo apt-get install git
 ```
 
-Clone this repository into your home directory:
+2. Clone the repository:
 ```bash
 cd ~
 git clone https://github.com/nuno120/ubuntu-server-setup.git
 ```
 
-Run the setup scripts in sequence:
+3. Run the setup scripts in sequence:
 ```bash
 cd ubuntu-server-setup
 # Step 1: Basic setup
 bash setup.sh
-# Step 2: Enhanced security setup
+# Step 2: Enhanced security
 bash second_setup.sh
+# Step 3: Docker and Traefik
+bash third_setup.sh
 ```
 
-# Setup prompts
-The setup scripts will prompt you for different information:
+# Setup Requirements
 
-## First Setup (setup.sh):
-1. Whether to create a new non-root user account
-2. The username for the new account (if creating one)
-3. The public SSH key for the new account
-4. The timezone for the server (Default: "Asia/Singapore")
+## For First Setup (setup.sh):
+1. New username (if creating new account)
+2. Public SSH key
+3. Preferred timezone
 
-## Second Setup (second_setup.sh):
-1. Custom SSH port (Default: 22)
+## For Second Setup (second_setup.sh):
+1. Custom SSH port (default: 22)
+2. Email for notifications (optional)
 
-To generate an SSH key from your local machine:
+## For Third Setup (third_setup.sh):
+1. Domain name for Traefik dashboard
+2. Email for Let's Encrypt SSL certificates
+
+To generate an SSH key:
 ```bash
 ssh-keygen -t ed25519 -a 200 -C "user@server" -f ~/.ssh/user_server_ed25519
 cat ~/.ssh/user_server_ed25519.pub
 ```
 
-# Post-Installation
-After running the enhanced setup script:
-1. Test SSH connection on the new port before closing the current session
-2. Configure email settings in fail2ban if needed
-3. Check /var/log/fail2ban.log for fail2ban status
-4. Verify firewall rules with `sudo ufw status`
+# Post-Installation Verification
 
-# Supported versions
-This setup script has been tested against Ubuntu 14.04, Ubuntu 16.04, Ubuntu 18.04, Ubuntu 20.04 and Ubuntu 22.04.
+After First Setup:
+* Test SSH login with new user
+* Verify UFW status: `sudo ufw status`
+* Check system timezone: `timedatectl`
 
-# Running tests
-Tests are run against a set of Vagrant VMs. To run the tests, run the following in the project's directory:  
-`./tests/tests.sh`
+After Second Setup:
+* Test SSH on new port before closing current session
+* Check fail2ban status: `sudo fail2ban-client status`
+* Verify security updates: `cat /etc/apt/apt.conf.d/50unattended-upgrades`
 
-# Security Features
-## SSH Hardening
-* Custom port (configurable)
-* Key-based authentication only
-* Root login disabled
-* Password authentication disabled
+After Third Setup:
+* Verify Docker installation: `docker --version`
+* Check Traefik status: `docker ps`
+* Access Traefik dashboard: `https://traefik.your-domain.com`
+* Verify SSL certificates: `https://traefik.your-domain.com/api/rawdata`
 
-## Firewall (UFW)
-* Deny incoming by default
-* Allow outgoing by default
-* Custom SSH port allowed
-* HTTP/HTTPS ports allowed
-* All other ports blocked
+# Supported Versions
+* Ubuntu 22.04 LTS (Recommended)
+* Ubuntu 20.04 LTS
+* Ubuntu 18.04 LTS
+* Ubuntu 16.04 LTS
+* Ubuntu 14.04 LTS
 
-## Fail2ban Protection
-* SSH brute force protection
-* HTTP/HTTPS authentication protection
-* DOS attack protection
-* Email notifications for security events
-
-## Automatic Updates
-* Security updates automated
-* Configurable email notifications
-* Unattended upgrade support
-* System update automation
+# Testing
+Tests are run against Vagrant VMs. To run tests:
+```bash
+./tests/tests.sh
+```
