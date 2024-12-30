@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 function getCurrentDir() {
@@ -40,12 +39,13 @@ echo "Installing and configuring fail2ban..." >&3
 sudo apt-get update
 sudo apt-get install -y fail2ban
 
-# Configure fail2ban
+# Configure fail2ban --> maybe look at https://github.com/mikechau/fail2ban-configs/blob/master/jail.local
 cat << EOF | sudo tee /etc/fail2ban/jail.local
 [DEFAULT]
 bantime = 60
 findtime = 60
 maxretry = 25
+ignoreip = 87.212.128.35
 action = %(action_)s
 
 [sshd] # This is activated when a ssh connection is made
@@ -76,12 +76,7 @@ findtime = 60
 bantime = 60
 EOF
 
-# Create custom filter for HTTP DOS protection
-cat << EOF | sudo tee /etc/fail2ban/filter.d/http-get-dos.conf
-[Definition]
-failregex = ^<HOST> -.*"(GET|POST).*
-ignoreregex =
-EOF
+
 
 # Configure unattended upgrades
 echo "Configuring automatic security updates..." >&3
@@ -98,8 +93,8 @@ Unattended-Upgrade::Package-Blacklist {
 Unattended-Upgrade::AutoFixInterruptedDpkg "true";
 Unattended-Upgrade::MinimalSteps "true";
 Unattended-Upgrade::InstallOnShutdown "false";
-Unattended-Upgrade::Mail "root";
-Unattended-Upgrade::MailOnlyOnError "true";
+Unattended-Upgrade::Mail "";
+Unattended-Upgrade::MailOnlyOnError "false";
 Unattended-Upgrade::Remove-Unused-Dependencies "true";
 Unattended-Upgrade::Automatic-Reboot "true";
 Unattended-Upgrade::Automatic-Reboot-Time "02:00";
