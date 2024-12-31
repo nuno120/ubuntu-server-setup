@@ -7,6 +7,14 @@ source ./setupLibrary.sh
 DEFAULT_DOMAIN="notitiemaker.nl"
 DEFAULT_EMAIL="beheer@notitiemaker.nl"
 
+print_success() {
+    echo -e "\e[32m$1\e[0m"
+}
+
+print_message() {
+    echo -e "\e[33m$1\e[0m"
+}
+
 # Function to get user input with default value
 get_user_input() {
     local prompt=$1

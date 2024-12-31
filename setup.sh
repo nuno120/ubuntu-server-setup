@@ -18,6 +18,7 @@ includeDependencies
 output_file="output.log"
 
 function main() {
+    sudo apt update && sudo apt upgrade -y
     read -rp "Do you want to create a new non-root user? (Recommended) [Y/N] " createUser
 
     # Run setup functions
